@@ -7,6 +7,7 @@ cristal, información útil y navegación completa con el mando.
 - Inventario real de la televisión y selección de canales por su identificador.
 - Wi-Fi o Ethernet actual, sin mostrar direcciones ni contraseñas.
 - Clima actual, ocho horas futuras, lluvia y pronóstico de mañana.
+- Cierre opcional de apps en segundo plano para liberar memoria.
 - Estado opcional del Mac: conexión, espacio libre y renderizado detectado.
 - Seis paisajes con atribución, vista previa, rotación y preferencias persistentes.
 - Cruceta, OK, Atrás y Magic Remote; pasar el puntero no activa categorías.

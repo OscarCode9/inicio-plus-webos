@@ -51,3 +51,33 @@ Prueba un arranque completo y encendido desde espera, Home desde varias apps,
 ambas rutas nativas y el botón físico. Valida también la imagen: la app que informa
 `getForegroundAppInfo` puede diferir de la ventana superpuesta visible. Una
 actualización de firmware puede requerir adaptar la integración.
+
+
+## Cierre opcional de apps en segundo plano
+
+`performance.js` y `preload.js` deben acompañar a `daemon.js`. El cierre automático se activa
+solo si existe `/var/lib/inicio/close-background-apps` al iniciar el supervisor.
+Al cambiar de aplicación espera a que se estabilice el foco y cierra las apps de
+usuario que quedaron detrás. Conserva Inicio+, la app en primer plano y los
+componentes del sistema. Las páginas web se terminan mediante WebAppMgr y las
+apps nativas mediante SAM. Un límite de reintentos evita ciclos de reapertura. Una comprobación cada diez
+segundos sirve de respaldo cuando webOS omite el evento de ventana. El receptor
+compartido AirPlay queda protegido para que el sistema no lo reinicie en bucle.
+
+Este modo libera memoria, pero las apps cerradas cargan de nuevo al abrirlas.
+Para desactivarlo, retira ese marcador local y reinicia únicamente el supervisor.
+Los fondos y su rotación permanecen independientes de esta opción.
+
+
+La misma opción desactiva la precarga automática de las apps de usuario instaladas
+mediante configd y el gestor de precarga, sin desinstalarlas. Conserva Home, TV,
+entradas, voz, asistentes y casting. Se respalda la lista anterior en
+`/var/lib/inicio/preload-before.json`; se reaplica la política al arrancar y despertar.
+Cerrar una app sin cambiar esta política permite que LG la recargue de nuevo.
+Para revertir la política, restaura solo los valores originales de los IDs de
+`preload-disabled.json` con `com.webos.service.config/setConfigs` y
+`com.webos.service.preloadmanager/setPreloadPolicy`, conservando otros cambios.
+
+
+Referencia de investigación del mecanismo de precarga:
+[Glasshouse preload.js](https://github.com/rorygallagher2024/glasshouse/blob/main/server/lib/preload.js).

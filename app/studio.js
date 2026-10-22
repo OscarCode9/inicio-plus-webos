@@ -8,6 +8,7 @@
  function time(value){if(!value||!isFinite(Date.parse(value)))return '—';var d=new Date(Date.parse(value)+((snapshot&&snapshot.utcOffsetMinutes)||-360)*60000);return ('0'+d.getUTCHours()).slice(-2)+':'+('0'+d.getUTCMinutes()).slice(-2);}
  function remaining(job){if(!job.enabled)return 'Desactivado';if(stale())return 'Horario sin confirmar';if(job.state==='running')return 'Producción en curso';var ms=Date.parse(job.nextRunAt)-Date.now()-offset;if(!isFinite(ms))return 'Sin horario confirmado';if(ms<=0)return 'Verificando inicio';var m=Math.ceil(ms/60000),h=Math.floor(m/60);return h?'En '+h+' h '+m%60+' min':'En '+m+' min';}
  function paintMac(){
+  if(document.hidden)return;
   var state=document.getElementById('macState'),storage=document.getElementById('macStorage'),activity=document.getElementById('macActivity');if(!state)return;
   var offline=stale(),mac=snapshot&&snapshot.mac;
   state.textContent=offline?(receivedAt?'Mac sin conexión':'Conectando con el Mac…'):'Mac activo';
