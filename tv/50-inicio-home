@@ -1,0 +1,26 @@
+#!/bin/sh
+# Reversible runtime overlays. Signed firmware files remain untouched.
+set -eu
+test -r /media/developer/apps/usr/palm/applications/com.gathin.tvhome/index.html
+# Keep native registration and window lifecycle; suppress only the visual tree.
+# LG changes `visible` again on relaunch, so opacity is the stable boundary.
+/usr/bin/node /var/lib/inicio/prepare-home-visuals.js
+for name in home fullhome; do
+  target=/usr/palm/applications/com.webos.app.$name/qml/main.qml
+  source=/var/lib/inicio/qml-$name-main.qml
+  test -s "$source"
+  if ! grep -q " $target " /proc/mounts; then
+    mount --bind "$source" "$target"
+  fi
+done
+if ! grep -q ' /usr/lib/qml/KeyFilters/systemUi.js ' /proc/mounts; then
+  mount --bind /var/lib/inicio/home-overrides/systemUi.js /usr/lib/qml/KeyFilters/systemUi.js
+fi
+# Keep native Home manifests and lifecycle intact. Restarting SAM during boot
+# invalidates restored windows on this firmware and can leave the display black.
+if [ ! -f /tmp/inicio-home-overrides-ready ]; then
+  touch /tmp/inicio-home-overrides-ready
+  # Discard a stock UI restored from the firmware's CRIU snapshot, before reuse.
+  killall com.webos.app.home com.webos.app.fullhome 2>/dev/null || true
+fi
+/usr/bin/node /var/lib/inicio/configure-home.js >/dev/null 2>&1 || true

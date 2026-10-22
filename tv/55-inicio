@@ -1,0 +1,8 @@
+#!/bin/sh
+# Root boot hook; all files are app-owned, outside read-only firmware partitions.
+if [ -f /tmp/inicio-daemon.lock/pid ] && kill -0 "$(cat /tmp/inicio-daemon.lock/pid)" 2>/dev/null; then
+  exit 0
+fi
+mkdir -p /var/log/inicio
+# Keep one small log per boot.
+/usr/bin/node /var/lib/inicio/daemon.js > /var/log/inicio/home.log 2>&1 </dev/null &
